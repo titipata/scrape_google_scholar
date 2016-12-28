@@ -1,6 +1,8 @@
 import os
 from glob import glob
-from pyspark.sql import Row
+from gs_utils import *
+from pyspark.sql import Row, SQLContext
+from pyspark import SparkConf, SparkContext
 
 conf = SparkConf().setAppName('google_scholar')\
     .setMaster('local[8]')\
@@ -8,13 +10,12 @@ conf = SparkConf().setAppName('google_scholar')\
     .set('driver.memory', '8g')\
     .set('spark.driver.maxResultSize', '0')
 
-source_path = os.path.join(os.path.expanduser('~'), '/Download/sample-set/*.htm')
-save_path = os.path.join(os.path.expanduser('~'), '/Downloads/sample-set')
+save_path = '.../Downloads/sample-set'
 
 if __name__ == '__main__':
     sc = SparkContext(conf=conf)
     sqlContext = SQLContext(sc)
-    pages = glob(source_path) # path to sample set
+    pages = glob('.../Downloads/sample-set/*.htm') # path to sample set
     pages_rdd = sc.parallelize(pages)
     bodies = pages_rdd.map(get_body)
 

@@ -29,12 +29,14 @@ def get_publications(body):
         pub_details = p.find('td', attrs={'class': 'gsc_a_t'})
         pub_ref = pub_details.a['href']
         pub_meta = pub_details.find_all('div')
+        title = pub_details.a.text
         authors = pub_meta[0].text or ''
         journal = pub_meta[1].text or ''
         cited_by = p.find('a', attrs={'class': 'gsc_a_ac'}).text or ''
         year = p.find('span', attrs={'class': 'gsc_a_h'}).text or ''
         pub_dict = {'user_id': user_id,
                     'ref_link': pub_ref,
+                    'title': title,
                     'authors': authors,
                     'journal': journal,
                     'cited_by': cited_by,
