@@ -24,3 +24,8 @@ done < pmcs.csv
 ```
 
 where `pmcs.csv` is a text file where each row is something like `PMC1217341`.
+After downloading enough html files, modify `pmc_spark.py` and run the following.
+
+```bash
+~/spark-2.0.0/bin/spark-submit pmc_spark.py
+```

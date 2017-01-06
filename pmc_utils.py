@@ -24,13 +24,19 @@ def extract_article_detail(article):
         date = ''
     details = article.find('div', attrs={'class': 'details'})
     journal = [text for text in details.find_all(text=True) if text.parent.name != "span"][0].strip()
-    title = article.find('a', attrs={'class':"view"}).text
-    pmc_cited = article.find('div', attrs={'class': 'resc'}).dd.text
+    if article.find('a', attrs={'class':"view"}) is not None:
+        title = article.find('a', attrs={'class':"view"}).text
+    else:
+        title = ''
     if article.find('span', attrs={'class': 'doi'}) is not None:
         doi = unidecode(article.find('span', attrs={'class': 'doi'}).get_text())
     else:
         doi = ''
-    author = article.find('div', attrs={'class': 'desc'}).get_text()
+    if article.find('div', attrs={'class': 'desc'}) is not None:
+        author = article.find('div', attrs={'class': 'desc'}).get_text()
+    else:
+        author = ''
+    pmc_cited = article.find('div', attrs={'class': 'resc'}).dd.text
 
     dict_cited = {'date': date,
                   'journal': journal,
@@ -39,20 +45,6 @@ def extract_article_detail(article):
                   'doi': doi,
                   'author': author}
     return dict_cited
-
-def extract_cited_articles(html_path):
-    """
-    Extract citations list and details of given PMC HTML path
-    """
-    soup = BeautifulSoup(open(html_path), 'html.parser')
-    cited_articles = list()
-    pmc = html_path.split('/')[-1].split('.')[0]
-    articles = soup.find_all('div', attrs={'class': 'rprt'})
-    for article in articles:
-        dict_cited = extract_article_detail(article)
-        if dict_cited['pmc_cited'] != pmc:
-            cited_articles.append(dict_cited)
-    return cited_articles
 
 def extract_article(html_path):
     """
@@ -73,9 +65,26 @@ def extract_article(html_path):
     for article in articles:
         dict_cited = extract_article_detail(article)
         if dict_cited['pmc_cited'] == pmc:
+            dict_cited['pmc'] = pmc
             dict_cited['url'] = url_main
             dict_cited['n_citations'] = n_citations
             dict_cited['n_pages'] = n_pages
             dict_cited['alternate_url'] = ';'.join(alternate_urls)
             return dict_cited
     return None
+
+def extract_cited_articles(html_path):
+    """
+    Extract citations list and details of given PMC HTML path
+    """
+    soup = BeautifulSoup(open(html_path), 'html.parser')
+    cited_articles = list()
+    pmc = html_path.split('/')[-1].split('.')[0]
+    articles = soup.find_all('div', attrs={'class': 'rprt'})
+    for article in articles:
+        dict_cited = extract_article_detail(article)
+        if dict_cited['pmc_cited'] != pmc:
+            cited_articles.append(dict_cited)
+    if len(cited_articles) == 0:
+        cited_articles = None
+    return cited_articles
