@@ -84,6 +84,7 @@ def extract_cited_articles(html_path):
     for article in articles:
         dict_cited = extract_article_detail(article)
         if dict_cited['pmc_cited'] != pmc:
+            dict_cited['pmc'] = pmc
             cited_articles.append(dict_cited)
     if len(cited_articles) == 0:
         cited_articles = None
