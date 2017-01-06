@@ -116,4 +116,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# Spark
+spark-warehouse/
+
 # End of https://www.gitignore.io/api/python,osx

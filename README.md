@@ -10,3 +10,17 @@ modify parameters in `gs_spark.py` and run the following:
 ```bash
 ~/spark-2.0.0/bin/spark-submit gs_spark.py
 ```
+
+# Scrape citations from PMC
+
+`pmc_utils.py` contains a snippet to scrape citations and details of article.
+We can slowly download HTML using following snippet.
+
+```bash
+while read p                                                                    
+do                                                                              
+  wget --header="Accept: text/html" --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" https://www.ncbi.nlm.nih.gov/pmc/articles/$p/citedby/ -O $p.html                                         
+done < pmcs.csv
+```
+
+where `pmcs.csv` is a text file where each row is something like `PMC1217341`.
