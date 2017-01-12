@@ -50,28 +50,30 @@ def extract_article(html_path):
     """
     Extract details of given PMC article
     """
-    soup = BeautifulSoup(open(html_path), 'html.parser')
-    pmc = html_path.split('/')[-1].split('.')[0]
-    n_citations = extract_n_citation(soup)
-    n_pages = int(n_citations/30) + 1
-    articles = soup.find_all('div', attrs={'class': 'rprt'})
+    try:
+        soup = BeautifulSoup(open(html_path), 'html.parser')
+        pmc = html_path.split('/')[-1].split('.')[0]
+        n_citations = extract_n_citation(soup)
+        n_pages = int(n_citations/30) + 1
+        articles = soup.find_all('div', attrs={'class': 'rprt'})
 
-    url_main = "http://www.ncbi.nlm.nih.gov/pmc/articles/%s/citedby/" % pmc
-    alternate_urls = list()
-    for i in range(2, n_pages+1):
-        url = "http://www.ncbi.nlm.nih.gov/pmc/articles/%s/citedby/?page=%s" % (pmc, str(i))
-        alternate_urls.append(url)
+        url_main = "http://www.ncbi.nlm.nih.gov/pmc/articles/%s/citedby/" % pmc
+        alternate_urls = list()
+        for i in range(2, n_pages+1):
+            url = "http://www.ncbi.nlm.nih.gov/pmc/articles/%s/citedby/?page=%s" % (pmc, str(i))
+            alternate_urls.append(url)
 
-    for article in articles:
-        dict_cited = extract_article_detail(article)
-        if dict_cited['pmc_cited'] == pmc:
-            dict_cited['pmc'] = pmc
-            dict_cited['url'] = url_main
-            dict_cited['n_citations'] = n_citations
-            dict_cited['n_pages'] = n_pages
-            dict_cited['alternate_url'] = ';'.join(alternate_urls)
-            return dict_cited
-    return None
+        for article in articles:
+            dict_cited = extract_article_detail(article)
+            if dict_cited['pmc_cited'] == pmc:
+                dict_cited['pmc'] = pmc
+                dict_cited['url'] = url_main
+                dict_cited['n_citations'] = n_citations
+                dict_cited['n_pages'] = n_pages
+                dict_cited['alternate_url'] = ';'.join(alternate_urls)
+                return dict_cited
+    except:
+        return None
 
 def extract_cited_articles(html_path):
     """
