@@ -14,8 +14,7 @@ modify parameters in `gs_spark.py` and run the following:
 # Scrape citations from PMC
 
 `pmc_utils.py` contains a snippet to scrape citations and details of article.
-We can slowly download HTML using following snippet, where `pmcs.csv` is a csv file
-contains PMC string in each rows.
+We can slowly download HTML using following snippet.
 
 ```bash
 while read p
@@ -25,7 +24,18 @@ done < pmcs.csv
 ```
 
 where `pmcs.csv` is a text file where each row is something like `PMC1217341`.
-After downloading enough html files, modify `pmc_spark.py` and run the following.
+For pages that have more than 30 citations, we can store each row in CSV file as
+`PMC2660425,2,http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2660425/citedby/?page=2`
+and download by running the following
+
+```bash
+while IFS=, read col1 col2 col3
+do
+  wget --header="Accept: text/html" --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" $col3 -O $col1-$col2.html
+done < pmcs.csv
+```
+
+After downloading html files, modify path in `pmc_spark.py` and run the following.
 
 ```bash
 ~/spark-2.0.0/bin/spark-submit pmc_spark.py
